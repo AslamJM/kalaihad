@@ -1,4 +1,4 @@
-import { Home, Package2, Settings, Store, User } from "lucide-react";
+import { Drill, Home, Package2, Settings, Store, User } from "lucide-react";
 import Link from "next/link";
 
 import {
@@ -52,6 +52,18 @@ const SideNav = () => {
             </Link>
           </TooltipTrigger>
           <TooltipContent side="right">Stores</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link
+              href="/products"
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+            >
+              <Drill className="h-5 w-5" />
+              <span className="sr-only">Products</span>
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent side="right">Products</TooltipContent>
         </Tooltip>
       </nav>
       <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">

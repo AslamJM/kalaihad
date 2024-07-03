@@ -1,8 +1,9 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { type z } from "zod";
+import { storeCreateFormSchema } from "~/schema";
 import {
   Form,
   FormControl,
@@ -12,50 +13,34 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-
 import { api } from "~/trpc/react";
+import { Button } from "../ui/button";
 
-const formSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().min(1, "Email is required"),
-  password: z.string().min(6, "Password should be atleast 6 characters long."),
-  role: z.enum(["ADMIN", "EMPLOYEE"]),
-});
+type FormSchema = z.infer<typeof storeCreateFormSchema>;
 
-type FormSchema = z.infer<typeof formSchema>;
-
-const UserCreateForm = () => {
+const StoreCreateForm = () => {
   const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(storeCreateFormSchema),
   });
 
   const utils = api.useUtils();
 
-  const createUser = api.user.create.useMutation({
+  const createStore = api.store.create.useMutation({
     onSuccess: async (data) => {
       if (data.success) {
         form.reset({
+          address: "",
           name: "",
           email: "",
-          password: "",
-          role: "EMPLOYEE",
+          phone: "",
         });
-
-        await utils.user.getLatest.invalidate();
+        await utils.store.getLatest.invalidate();
       }
     },
   });
 
   const onSubmit = (values: FormSchema) => {
-    createUser.mutate(values);
+    createStore.mutate(values);
   };
 
   return (
@@ -76,6 +61,19 @@ const UserCreateForm = () => {
         />
         <FormField
           control={form.control}
+          name="address"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Address</FormLabel>
+              <FormControl>
+                <Input placeholder="Address" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
@@ -89,44 +87,24 @@ const UserCreateForm = () => {
         />
         <FormField
           control={form.control}
-          name="password"
+          name="phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Phone</FormLabel>
               <FormControl>
-                <Input placeholder="Password" {...field} type="password" />
+                <Input placeholder="Phone" {...field} type="text" />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="role"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Role</FormLabel>
-              <Select onValueChange={field.onChange}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Role" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="ADMIN">Admin</SelectItem>
-                  <SelectItem value="EMPLOYEE">Employee</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+
         <Button type="submit" disabled={form.formState.isSubmitting}>
-          {createUser.isPending ? "Creating" : "Create"}
+          {createStore.isPending ? "Creating" : "Create"}
         </Button>
       </form>
     </Form>
   );
 };
 
-export default UserCreateForm;
+export default StoreCreateForm;

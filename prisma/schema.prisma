@@ -76,3 +76,51 @@ model User {
     role Role 
     stores Store[]
 }
+
+model Customer {
+   id        Int     @id @default(autoincrement())
+    name String
+    Sales Sale[]
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+}
+
+model Sale {
+  id        Int     @id @default(autoincrement()) 
+  customer_id Int
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+   customer Customer @relation(fields: [customer_id],references: [id]) 
+  sale_details SaleDetails[]
+  payment Payment?
+}
+
+model SaleDetails {
+  product_id Int  
+  sale_id Int
+  quantity Int  
+
+  sale Sale @relation(fields: [sale_id],references: [id])
+
+  @@id(name: "sale_detail_id",fields: [product_id,sale_id])
+}
+
+enum PaymentMethod {
+    CASH
+    CHEQUE
+}
+
+model Payment {
+    sale_id Int @id
+    total Float
+    paid Float
+    outstanding Float
+    discount Float
+    payment_method PaymentMethod
+    due_date DateTime
+    updated_at DateTime @updatedAt
+
+    sale Sale @relation(fields: [sale_id],references: [id])
+}

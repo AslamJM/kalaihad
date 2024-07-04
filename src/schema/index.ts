@@ -35,5 +35,6 @@ export const singleQuerySchema = z.number().min(0)
 
 export const addToStockSchema = z.object({
     id: z.number().min(0),
-    quantity: z.number()
+    quantity: z.number(),
+    date: z.date().optional()
 })

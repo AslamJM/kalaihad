@@ -81,7 +81,8 @@ export const productRouter = createTRPCRouter({
                         connect: {
                             id: input.id
                         }
-                    }
+                    },
+                    createdAt: input.date
                 }
             })
             return {

@@ -45,11 +45,7 @@ const CreateProductForm = () => {
 
   const onSubmit = (values: FormSchema) => {
     createProduct.mutate(values);
-    form.resetField("buying_price");
-    form.resetField("selling_price");
-    form.resetField("name");
-    form.resetField("quantity");
-    form.resetField("store_id");
+    form.reset({}, { keepValues: false });
   };
   return (
     <Form {...form}>

@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import Link from "next/link";
 
 interface ProductTableProps {
   products: Product[];
@@ -24,18 +25,19 @@ const ProductTable: FC<ProductTableProps> = ({ products }) => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {products.length === 0 ? (
-          <TableRow>No products to display</TableRow>
-        ) : (
-          products.map((pr) => (
-            <TableRow key={pr.id}>
-              <TableCell>{pr.name}</TableCell>
-              <TableCell>{pr.quantity}</TableCell>
-              <TableCell>{pr.selling_price}</TableCell>
-            </TableRow>
-          ))
-        )}
+        {products.map((pr) => (
+          <TableRow key={pr.id}>
+            <TableCell>
+              <Link href={`/products/${pr.id}`}>{pr.name}</Link>
+            </TableCell>
+            <TableCell>{pr.quantity}</TableCell>
+            <TableCell>{pr.selling_price}</TableCell>
+          </TableRow>
+        ))}
       </TableBody>
+      {products.length === 0 && (
+        <div className=" py-4">No products to display</div>
+      )}
     </Table>
   );
 };

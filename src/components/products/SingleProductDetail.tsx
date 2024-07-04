@@ -1,0 +1,36 @@
+import { type Product } from "@prisma/client";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { Table, TableBody, TableCell, TableRow } from "../ui/table";
+import SimpleTableHeader from "../common/SimpleTableHeader";
+
+const SingleProductDetail = ({ product }: { product: Product }) => {
+  const { name, quantity, buying_price, selling_price } = product;
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{name}</CardTitle>
+        <CardDescription>In Stock: {quantity} pcs</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <SimpleTableHeader heads={["Stock", "Buying Price", "Sale Price"]} />
+          <TableBody>
+            <TableRow>
+              <TableCell>{quantity}</TableCell>
+              <TableCell>{buying_price}</TableCell>
+              <TableCell>{selling_price}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default SingleProductDetail;

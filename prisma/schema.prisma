@@ -44,10 +44,27 @@ model Product {
   selling_price Float
   store_id Int
 
-  store Store @relation(fields: [store_id],references: [id])    
+  store Store @relation(fields: [store_id],references: [id])
+  histories StockHistory[]    
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt 
+}
+
+enum StockActions {
+    CREATED
+    ADDED
+    SALE
+}
+
+model StockHistory {
+    id        Int      @id @default(autoincrement())
+    action StockActions
+    quantity Int
+    product_id Int
+    createdAt DateTime @default(now())
+
+    product Product @relation(fields: [product_id],references: [id])
 }
 
 model User {

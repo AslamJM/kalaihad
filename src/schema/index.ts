@@ -25,3 +25,15 @@ export const productInputTrpc = z.object({
     buying_price: z.number(),
     store_id: z.number()
 })
+
+export const updateProductSchema = z.object({
+    id: z.number(),
+    update: productInputTrpc.partial()
+})
+
+export const singleQuerySchema = z.number().min(0)
+
+export const addToStockSchema = z.object({
+    id: z.number().min(0),
+    quantity: z.number()
+})

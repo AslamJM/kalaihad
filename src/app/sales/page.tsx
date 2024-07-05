@@ -1,3 +1,4 @@
+import CreateSaleForm from "~/components/forms/CreateSaleForm";
 import {
   Card,
   CardContent,
@@ -15,7 +16,9 @@ const SalesPage = () => {
             <CardTitle>Create Sale</CardTitle>
             <CardDescription>create sale and payment.</CardDescription>
           </CardHeader>
-          <CardContent></CardContent>
+          <CardContent>
+            <CreateSaleForm />
+          </CardContent>
         </Card>
       </div>
       <div className="md-w/2 w-full p-2">

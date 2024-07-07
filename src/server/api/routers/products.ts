@@ -49,6 +49,19 @@ export const productRouter = createTRPCRouter({
                 where: { id: input.id },
                 data: input.update
             })
+            if (input.update.quantity) {
+                await ctx.db.stockHistory.create({
+                    data: {
+                        action: "EDITED",
+                        quantity: input.update.quantity,
+                        product: {
+                            connect: {
+                                id: input.id
+                            }
+                        }
+                    }
+                })
+            }
             return {
                 success: true,
                 data: updated,

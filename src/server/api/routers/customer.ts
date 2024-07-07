@@ -24,6 +24,15 @@ export const customerRouter = createTRPCRouter({
         }
     }),
 
+    selectAll: publicProcedure.query(({ ctx }) => {
+        return ctx.db.customer.findMany({
+            select: {
+                id: true,
+                name: true
+            }
+        })
+    }),
+
     all: publicProcedure.query(({ ctx }) => {
         return ctx.db.customer.findMany({
             select: {

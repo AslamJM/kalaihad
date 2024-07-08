@@ -45,7 +45,8 @@ model Product {
   store_id Int
 
   store Store @relation(fields: [store_id],references: [id])
-  histories StockHistory[]    
+  histories StockHistory[]
+  sale_details SaleDetails[]    
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt 
@@ -105,6 +106,7 @@ model SaleDetails {
   quantity Int  
 
   sale Sale @relation(fields: [sale_id],references: [id])
+  product Product @relation(fields: [product_id],references: [id])
 
   @@id(name: "sale_detail_id",fields: [product_id,sale_id])
 }
@@ -114,6 +116,11 @@ enum PaymentMethod {
     CHEQUE
 }
 
+enum PaymentStatus {
+    PENDING
+    PAID
+}
+
 model Payment {
     sale_id Int @id
     total Float
@@ -121,8 +128,19 @@ model Payment {
     outstanding Float
     discount Float
     payment_method PaymentMethod
+    payment_status PaymentStatus @default(PENDING)
     due_date DateTime
     updated_at DateTime @updatedAt
 
     sale Sale @relation(fields: [sale_id],references: [id])
+    payment_histories PaymentHistory[]
+}
+
+model PaymentHistory {
+    id Int @id @default(autoincrement())
+    amount Float
+    date DateTime
+    payment_id Int
+
+    payment Payment @relation(fields: [payment_id],references: [sale_id])
 }

@@ -1,4 +1,5 @@
 import { StockActions } from "@prisma/client";
+import { z } from "zod";
 import { saleInput } from "~/schema/sale";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
@@ -55,8 +56,8 @@ export const saleRouter = createTRPCRouter({
         }
     }),
 
-    salesTable: publicProcedure.query(({ ctx }) => {
-        return ctx.db.sale.findMany({
+    salesTable: publicProcedure.query(async ({ ctx }) => {
+        const data = await ctx.db.sale.findMany({
             select: {
                 id: true,
                 sale_date: true,
@@ -74,6 +75,28 @@ export const saleRouter = createTRPCRouter({
                     select: {
                         total: true,
                         outstanding: true
+                    }
+                }
+            }
+        })
+
+        return data.map(d => ({
+            id: d.id,
+            sale_date: d.sale_date,
+            customer: d.customer.name,
+            items: d._count.sale_details,
+            total: d.payment?.total ?? 0,
+            outstanding: d.payment?.outstanding ?? 0
+        }))
+    }),
+
+    one: publicProcedure.input(z.number()).query(({ ctx, input }) => {
+        return ctx.db.sale.findUnique({
+            where: { id: input }, include: {
+                customer: true,
+                sale_details: {
+                    include: {
+                        product: true
                     }
                 }
             }

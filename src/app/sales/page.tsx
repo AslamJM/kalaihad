@@ -1,6 +1,5 @@
 import { Pencil } from "lucide-react";
 import Link from "next/link";
-import SalesTable from "~/components/tables/SalesTable";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -9,8 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import SalesDataWrapper from "./_components/SalesDataWrapper";
 
-const SalesPage = () => {
+const SalesPage = async () => {
   return (
     <div className="space-y-4">
       <Link href="/sales/create">
@@ -25,7 +25,7 @@ const SalesPage = () => {
           <CardDescription>sales info table</CardDescription>
         </CardHeader>
         <CardContent>
-          <SalesTable />
+          <SalesDataWrapper />
         </CardContent>
       </Card>
     </div>

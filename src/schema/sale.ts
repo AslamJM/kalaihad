@@ -8,6 +8,7 @@ export const createCustomerSchema = z.object({
 
 export const createSalesSchema = z.object({
     customer_id: z.number(),
+    sale_date: z.date(),
     details: z.array(z.object({
         product_id: z.number(),
         sale_id: z.number(),

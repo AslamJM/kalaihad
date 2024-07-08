@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarIcon, Loader2, Plus } from "lucide-react";
+import { CalendarIcon, Edit2, Loader2, Plus } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   Card,
@@ -19,19 +19,25 @@ import { format } from "date-fns";
 import { addToStockSchema } from "~/schema";
 import { useParams } from "next/navigation";
 import { api } from "~/trpc/react";
+import ProductEdit from "./ProductEdit";
 
 const ProductActions = () => {
   const [date, setDate] = useState<Date>();
   const [quantity, setQuantity] = useState("");
+  const params = useParams<{ id: string }>();
+  const [editMode, setEditMode] = useState(false);
+
+  const { data: product } = api.product.one.useQuery(+params.id);
 
   const utils = api.useUtils();
 
   const { id } = useParams<{ id: string }>();
+
   const addStock = api.product.addToStock.useMutation({
     onSuccess: async (data) => {
       if (data.success) {
         await utils.history.productHistories.invalidate(+id);
-        await utils.product.one.invalidate();
+        await utils.product.one.invalidate(+id);
         setDate(undefined);
         setQuantity("");
       }
@@ -57,7 +63,7 @@ const ProductActions = () => {
         <CardTitle>Actions</CardTitle>
         <CardDescription>actions for update this item</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
         <div>
           <div className="flex items-end gap-4">
             <div>
@@ -106,6 +112,17 @@ const ProductActions = () => {
               Add
             </Button>
           </div>
+        </div>
+        <div>
+          {!editMode && (
+            <Button variant="outline" onClick={() => setEditMode(true)}>
+              <Edit2 className="mr-2 text-blue-600" />
+              Edit Product Details
+            </Button>
+          )}
+          {editMode && product && (
+            <ProductEdit product={product} setEditMode={setEditMode} />
+          )}
         </div>
       </CardContent>
     </Card>

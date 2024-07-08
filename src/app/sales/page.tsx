@@ -1,4 +1,6 @@
-import CreateSaleForm from "~/components/forms/CreateSaleForm";
+import { Pencil } from "lucide-react";
+import Link from "next/link";
+import { Button } from "~/components/ui/button";
 import {
   Card,
   CardContent,
@@ -6,30 +8,26 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import SalesDataWrapper from "./_components/SalesDataWrapper";
 
-const SalesPage = () => {
+const SalesPage = async () => {
   return (
-    <div className="flex flex-col md:flex-row md:space-x-4">
-      <div className="md-w/2 w-full p-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Create Sale</CardTitle>
-            <CardDescription>create sale and payment.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <CreateSaleForm />
-          </CardContent>
-        </Card>
-      </div>
-      <div className="md-w/2 w-full p-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Sales</CardTitle>
-            <CardDescription>sales info.</CardDescription>
-          </CardHeader>
-          <CardContent></CardContent>
-        </Card>
-      </div>
+    <div className="space-y-4">
+      <Link href="/sales/create">
+        <Button variant="outline">
+          <Pencil className="mr-2" /> Create Sale
+        </Button>
+      </Link>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>All Sales</CardTitle>
+          <CardDescription>sales info table</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <SalesDataWrapper />
+        </CardContent>
+      </Card>
     </div>
   );
 };

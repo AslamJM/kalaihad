@@ -11,6 +11,8 @@ import {
   TableRow,
 } from "../ui/table";
 import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Option } from "lucide-react";
 
 interface UserTableProps {
   users: User[];
@@ -33,6 +35,11 @@ const UserTable: FC<UserTableProps> = ({ users }) => {
             <TableCell>{user.email}</TableCell>
             <TableCell>
               <Badge variant="outline">{user.role}</Badge>
+            </TableCell>
+            <TableCell>
+              <Button>
+                <Option />
+              </Button>
             </TableCell>
           </TableRow>
         ))}

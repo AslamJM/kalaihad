@@ -9,11 +9,12 @@ export const createCustomerSchema = z.object({
 export const createSalesSchema = z.object({
     customer_id: z.number(),
     sale_date: z.date(),
-    details: z.array(z.object({
-        product_id: z.number(),
-        sale_id: z.number(),
-        quantity: z.number()
-    }))
+    sale_details: z.object({
+        create: z.array(z.object({
+            product_id: z.number(),
+            quantity: z.number()
+        }))
+    })
 
 })
 
@@ -24,4 +25,9 @@ export const createPaymentSchema = z.object({
     discount: z.number(),
     payment_method: z.enum(["CASH", "CHEQUE"]),
     due_date: z.date()
+})
+
+export const saleInput = z.object({
+    sale: createSalesSchema,
+    payment: createPaymentSchema
 })

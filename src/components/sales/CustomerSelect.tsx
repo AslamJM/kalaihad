@@ -20,7 +20,7 @@ import { format } from "date-fns";
 const CustomerSelect = () => {
   const [open, setOpen] = useState(false);
   const customers = api.customer.all.useQuery();
-  const { customerId, setCustomer, saleDate, setDate } = useSaleCreateStore();
+  const { customerId, setCustomerId, date, setDate } = useSaleCreateStore();
 
   const values = useCallback(() => {
     if (!customers.data) {
@@ -29,7 +29,7 @@ const CustomerSelect = () => {
     return customers.data.map((c) => ({
       value: c.name,
       label: c.name,
-      id: c.id,
+      id: c.id.toString(),
     }));
   }, [customers]);
 
@@ -62,7 +62,7 @@ const CustomerSelect = () => {
                       key={c.value}
                       value={c.value.toString()}
                       onSelect={() => {
-                        setCustomer(c.id);
+                        setCustomerId(c.id);
                         setOpen(false);
                       }}
                     >
@@ -89,17 +89,17 @@ const CustomerSelect = () => {
               variant={"outline"}
               className={cn(
                 "w-[280px] justify-start text-left font-normal",
-                !saleDate && "text-muted-foreground",
+                !date && "text-muted-foreground",
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {saleDate ? format(saleDate, "PPP") : <span>Pick a date</span>}
+              {date ? format(date, "PPP") : <span>Pick a date</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">
             <Calendar
               mode="single"
-              selected={saleDate}
+              selected={date}
               onSelect={(d) => setDate(d ?? new Date())}
               initialFocus
             />

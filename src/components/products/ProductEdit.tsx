@@ -16,6 +16,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { api } from "~/trpc/react";
 import { CardTitle } from "../ui/card";
+import { useRouter } from "next/navigation";
 
 interface ProductEditProps {
   product: Product;
@@ -39,14 +40,15 @@ const ProductEdit: FC<ProductEditProps> = ({ product, setEditMode }) => {
     quantity: product.quantity.toString(),
   };
 
+  const router = useRouter();
+
   const utils = api.useUtils();
 
   const updateProduct = api.product.update.useMutation({
     onSuccess: async (data) => {
       if (data.success && data.data) {
         setEditMode(false);
-        await utils.product.one.cancel(data.data.id);
-        utils.product.one.setData(data.data.id, data.data);
+        router.refresh();
       }
     },
     onSettled: async () => {

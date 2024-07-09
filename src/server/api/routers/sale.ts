@@ -14,7 +14,13 @@ export const saleRouter = createTRPCRouter({
             const payment = await ctx.db.payment.create({
                 data: {
                     sale_id: sale.id,
-                    ...paymentInput
+                    ...paymentInput,
+                    payment_histories: {
+                        create: {
+                            date: input.sale.sale_date,
+                            amount: input.payment.paid
+                        }
+                    }
                 }
             })
 
@@ -40,6 +46,8 @@ export const saleRouter = createTRPCRouter({
             await ctx.db.stockHistory.createMany({
                 data: historyupdates
             })
+
+
 
             return {
                 success: true,

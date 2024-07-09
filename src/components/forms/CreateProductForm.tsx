@@ -2,8 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { type z } from "zod";
-import { productInputSchema } from "~/schema";
+import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -24,11 +23,26 @@ import {
 } from "../ui/select";
 import Loader from "../common/Loader";
 
-type FormSchema = z.infer<typeof productInputSchema>;
+const formSchema = z.object({
+  name: z.string().min(1, "name is required"),
+  quantity: z.string(),
+  selling_price: z.string(),
+  buying_price: z.string(),
+  store_id: z.string().nullable(),
+});
+
+type FormSchema = z.infer<typeof formSchema>;
 
 const CreateProductForm = () => {
   const form = useForm<FormSchema>({
-    resolver: zodResolver(productInputSchema),
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      quantity: "",
+      selling_price: "",
+      buying_price: "",
+      store_id: null,
+    },
   });
 
   const utils = api.useUtils();
@@ -36,6 +50,7 @@ const CreateProductForm = () => {
   const createProduct = api.product.create.useMutation({
     onSuccess: async (data) => {
       if (data.success) {
+        form.reset();
         await utils.product.all.invalidate();
       }
     },
@@ -44,8 +59,16 @@ const CreateProductForm = () => {
   const stores = api.store.getLatest.useQuery();
 
   const onSubmit = (values: FormSchema) => {
-    createProduct.mutate(values);
-    form.reset({}, { keepValues: false });
+    console.log(values);
+
+    const input = {
+      name: values.name,
+      quantity: +values.quantity,
+      selling_price: +values.selling_price,
+      buying_price: +values.buying_price,
+      store_id: +values.store_id!,
+    };
+    createProduct.mutate(input);
   };
   return (
     <Form {...form}>
@@ -71,7 +94,7 @@ const CreateProductForm = () => {
               <FormItem>
                 <FormLabel>Quantity</FormLabel>
                 <FormControl>
-                  <Input placeholder="Quantity" {...field} />
+                  <Input placeholder="Quantity" {...field} type="number" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -119,7 +142,7 @@ const CreateProductForm = () => {
               <FormItem>
                 <FormLabel>Buying Price</FormLabel>
                 <FormControl>
-                  <Input placeholder="Buying Price" {...field} />
+                  <Input placeholder="Buying Price" {...field} type="number" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -132,7 +155,7 @@ const CreateProductForm = () => {
               <FormItem>
                 <FormLabel>Selling Price</FormLabel>
                 <FormControl>
-                  <Input placeholder="Selling Price" {...field} />
+                  <Input placeholder="Selling Price" {...field} type="number" />
                 </FormControl>
                 <FormMessage />
               </FormItem>

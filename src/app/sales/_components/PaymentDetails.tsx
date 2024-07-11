@@ -30,7 +30,7 @@ const PaymentDetails: FC<PaymentDetailsProps> = ({ details }) => {
     sale_id,
   } = details;
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <Table>
         <SimpleTableHeader heads={["total", "discount", "paid", "status"]} />
         <TableBody>
@@ -56,6 +56,7 @@ const PaymentDetails: FC<PaymentDetailsProps> = ({ details }) => {
               <p className="text-muted-foreground">{formatDate(due_date)}</p>
             </div>
           </div>
+          <h3>Make Payment</h3>
           <MakePayment id={sale_id} outstanding={outstanding} />
         </>
       )}

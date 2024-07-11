@@ -1,3 +1,6 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,8 +9,24 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "../ui/breadcrumb";
+import { Fragment, useCallback } from "react";
+import Link from "next/link";
 
 const BreadCrumbsComp = () => {
+  const path = usePathname();
+
+  const crumbs = useCallback(() => {
+    const paths = path.split("/").slice(1);
+    if (paths.length > 0) {
+      const page = paths.at(-1);
+      paths.shift();
+      return {
+        page,
+        paths,
+      };
+    }
+  }, [path]);
+
   return (
     <Breadcrumb>
       <BreadcrumbList>
@@ -15,13 +34,21 @@ const BreadCrumbsComp = () => {
           <BreadcrumbLink href="/">Home</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/components">Components</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-        </BreadcrumbItem>
+        {crumbs()?.paths?.map((cr, index) => (
+          <Fragment key={`crumb-${index}`}>
+            <BreadcrumbItem>
+              <BreadcrumbLink>
+                <Link href={`/${cr}`}>{cr}</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+          </Fragment>
+        ))}
+        {crumbs()?.page && (
+          <BreadcrumbItem>
+            <BreadcrumbPage>{crumbs()?.page}</BreadcrumbPage>
+          </BreadcrumbItem>
+        )}
       </BreadcrumbList>
     </Breadcrumb>
   );

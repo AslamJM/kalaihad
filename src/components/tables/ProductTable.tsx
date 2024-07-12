@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "../ui/table";
 import Link from "next/link";
+import { formatSLR } from "sl-currency-formatter";
 
 interface ProductTableProps {
   products: Product[];
@@ -22,8 +23,8 @@ const ProductTable: FC<ProductTableProps> = ({ products }) => {
       <TableHeader>
         <TableRow>
           <TableHead>Name</TableHead>
-          <TableHead>Available</TableHead>
-          <TableHead>Price</TableHead>
+          <TableHead className="text-right">Available</TableHead>
+          <TableHead className="text-right">Price</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -32,8 +33,10 @@ const ProductTable: FC<ProductTableProps> = ({ products }) => {
             <TableCell>
               <Link href={`/products/${pr.id}`}>{pr.name}</Link>
             </TableCell>
-            <TableCell>{pr.quantity}</TableCell>
-            <TableCell>{pr.selling_price}</TableCell>
+            <TableCell className="text-right">{pr.quantity}</TableCell>
+            <TableCell className="text-right">
+              {formatSLR(pr.selling_price)}
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>

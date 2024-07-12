@@ -59,6 +59,11 @@ enum StockActions {
     SALE
 }
 
+enum EditType {
+    INC
+    DEC
+}
+
 model StockHistory {
     id        Int      @id @default(autoincrement())
     action StockActions
@@ -67,6 +72,17 @@ model StockHistory {
     createdAt DateTime @default(now())
 
     product Product @relation(fields: [product_id],references: [id])
+    edits StockHistoryEdit[]
+}
+
+model StockHistoryEdit {
+    id        Int      @id @default(autoincrement())
+    history_id Int 
+    type EditType
+    amount Int
+    createdAt DateTime @default(now())
+
+    stock_history StockHistory @relation(fields: [history_id],references: [id])
 }
 
 model User {
@@ -143,4 +159,16 @@ model PaymentHistory {
     payment_id Int
 
     payment Payment @relation(fields: [payment_id],references: [sale_id])
+
+    edits PaymentHistoryEdit[]
+}
+
+model PaymentHistoryEdit {
+    id        Int      @id @default(autoincrement())
+    history_id Int 
+    type EditType
+    amount Float
+    createdAt DateTime @default(now())
+
+    payment_history PaymentHistory @relation(fields: [history_id],references: [id])
 }

@@ -17,9 +17,11 @@ const BreadCrumbsComp = () => {
 
   const crumbs = useCallback(() => {
     const paths = path.split("/").slice(1);
+
     if (paths.length > 0) {
       const page = paths.at(-1);
-      paths.shift();
+      paths.pop();
+
       return {
         page,
         paths,
@@ -28,7 +30,7 @@ const BreadCrumbsComp = () => {
   }, [path]);
 
   return (
-    <Breadcrumb>
+    <Breadcrumb className="hidden md:block">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/">Home</BreadcrumbLink>
@@ -38,7 +40,13 @@ const BreadCrumbsComp = () => {
           <Fragment key={`crumb-${index}`}>
             <BreadcrumbItem>
               <BreadcrumbLink>
-                <Link href={`/${cr}`}>{cr}</Link>
+                <Link
+                  href={`/${crumbs()
+                    ?.paths.slice(0, index + 1)
+                    .join("/")}`}
+                >
+                  {cr}
+                </Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />

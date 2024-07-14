@@ -1,7 +1,6 @@
 import {
   BadgeDollarSign,
   Drill,
-  Home,
   Package2,
   Settings,
   Store,
@@ -26,18 +25,6 @@ const SideNav = () => {
         >
           <Package2 className="h-4 w-4 transition-all group-hover:scale-110" />
         </Link>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Link
-              href="#"
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-            >
-              <Home className="h-5 w-5" />
-              <span className="sr-only">Dashboard</span>
-            </Link>
-          </TooltipTrigger>
-          <TooltipContent side="right">Dashboard</TooltipContent>
-        </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
             <Link

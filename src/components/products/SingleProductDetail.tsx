@@ -13,6 +13,7 @@ import { api } from "~/trpc/react";
 import Loader from "../common/Loader";
 import { type Product } from "@prisma/client";
 import { useParams } from "next/navigation";
+import { formatSLR } from "sl-currency-formatter";
 
 const SingleProductDetail = ({ product }: { product: Product }) => {
   const { id } = useParams<{ id: string }>();
@@ -46,8 +47,8 @@ const SingleProductDetail = ({ product }: { product: Product }) => {
             <TableBody>
               <TableRow>
                 <TableCell>{quantity}</TableCell>
-                <TableCell>{buying_price}</TableCell>
-                <TableCell>{selling_price}</TableCell>
+                <TableCell>{formatSLR(buying_price)}</TableCell>
+                <TableCell>{formatSLR(selling_price)}</TableCell>
               </TableRow>
             </TableBody>
           </Table>

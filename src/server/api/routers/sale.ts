@@ -1,6 +1,6 @@
-import { StockActions } from "@prisma/client";
+import { type Prisma, StockActions } from "@prisma/client";
 import { z } from "zod";
-import { saleInput } from "~/schema/sale";
+import { saleInput, updateSaleDetailsSchema } from "~/schema/sale";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const saleRouter = createTRPCRouter({
@@ -56,6 +56,7 @@ export const saleRouter = createTRPCRouter({
             }
 
         } catch (error) {
+
             return {
                 success: false,
                 data: null,
@@ -109,5 +110,138 @@ export const saleRouter = createTRPCRouter({
                 }
             }
         })
+    }),
+
+    updateSingleSaleDetail: publicProcedure.input(updateSaleDetailsSchema).mutation(async ({ ctx, input }) => {
+        let priceDiff = 0
+        let quantityDiff = 0
+        let totalDiff = 0
+        try {
+
+            const sd = await ctx.db.saleDetails.findUniqueOrThrow({
+                where: {
+                    sale_detail_id: {
+                        product_id: input.product_id,
+                        sale_id: input.sale_id
+                    }
+                }
+            })
+
+            const og_price = sd.price
+            const og_quantity = sd.quantity
+
+            if (input.price && input.quantity) {
+
+                totalDiff = input.price * input.quantity - og_price * og_quantity
+                quantityDiff = input.quantity - og_quantity
+                priceDiff = input.price - og_price
+            }
+
+            else if (input.price && !input.quantity) {
+                priceDiff = input.price - og_price
+                totalDiff = priceDiff * og_quantity
+
+            } else if (input.quantity) {
+                quantityDiff = input.quantity - og_quantity
+                totalDiff = og_price * quantityDiff
+
+            }
+
+            let updateObj: Prisma.SaleDetailsUpdateInput = {}
+
+            if (quantityDiff && priceDiff) {
+                updateObj = {
+                    quantity: quantityDiff > 0 ? {
+                        increment: Math.abs(quantityDiff)
+                    } : {
+                        decrement: Math.abs(quantityDiff)
+                    },
+                    price: priceDiff > 0 ? {
+                        increment: Math.abs(priceDiff
+                        )
+                    } : {
+                        decrement: Math.abs(priceDiff
+                        )
+                    }
+                }
+            } else if (quantityDiff) {
+                updateObj = {
+                    quantity: quantityDiff > 0 ? {
+                        increment: Math.abs(quantityDiff)
+                    } : {
+                        decrement: Math.abs(quantityDiff)
+                    },
+                }
+            } else {
+                updateObj = {
+                    price: priceDiff > 0 ? {
+                        increment: Math.abs(priceDiff
+                        )
+                    } : {
+                        decrement: Math.abs(priceDiff
+                        )
+                    }
+                }
+            }
+
+            const updated = await ctx.db.saleDetails.update({
+                where: {
+                    sale_detail_id: {
+                        product_id: input.product_id,
+                        sale_id: input.sale_id
+                    }
+                }, data: updateObj
+            })
+
+            if (quantityDiff) {
+
+                await ctx.db.product.update({
+                    where: { id: input.product_id },
+                    data: {
+                        quantity: quantityDiff > 0 ? {
+                            increment: Math.abs(quantityDiff)
+                        } : {
+                            decrement: Math.abs(quantityDiff)
+                        },
+                    }
+                })
+
+
+
+
+            }
+
+
+            await ctx.db.payment.update({
+                where: { sale_id: input.sale_id }, data: totalDiff > 0 ? {
+                    total: {
+                        increment: Math.abs(totalDiff)
+                    },
+                    outstanding: {
+                        increment: Math.abs(totalDiff)
+                    }
+                } : {
+                    total: {
+                        decrement: Math.abs(totalDiff)
+                    },
+                    outstanding: {
+                        decrement: Math.abs(totalDiff)
+                    }
+                }
+            })
+
+            return {
+                success: true,
+                data: updated,
+                message: "updated successfully"
+            }
+
+        } catch (error) {
+            return {
+                success: false,
+                data: null,
+                message: "failed to update"
+            }
+        }
     })
 })

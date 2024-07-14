@@ -63,6 +63,7 @@ const PaymentForm = () => {
           create: items.map((i) => ({
             product_id: i.product.id,
             quantity: i.quantity,
+            price: i.price,
           })),
         },
       },

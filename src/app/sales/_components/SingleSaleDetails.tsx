@@ -10,8 +10,9 @@ import SimpleTableHeader from "~/components/common/SimpleTableHeader";
 import { Label } from "~/components/ui/label";
 import { Table, TableBody, TableCell, TableRow } from "~/components/ui/table";
 import { formatDate, padNumber } from "~/lib/utils";
+import EditSaleDetails from "./EditSaleDetails";
 
-type SaleDetailsWithProduct = SaleDetails & { product: Product };
+export type SaleDetailsWithProduct = SaleDetails & { product: Product };
 
 export type SaleQuerySingle = Sale & {
   customer: Customer;
@@ -35,12 +36,16 @@ const SingleSaleDetails: FC<SingleSaleDetailsProps> = ({ sale }) => {
           <p className="text-muted-foreground">{sale.customer.name}</p>
         </div>
         <Table>
-          <SimpleTableHeader heads={["Item", "Quantity"]} />
+          <SimpleTableHeader heads={["Item", "Quantity", "Price"]} />
           <TableBody>
             {sale.sale_details.map((item) => (
               <TableRow key={item.product_id}>
                 <TableCell>{item.product.name}</TableCell>
                 <TableCell>{item.quantity}</TableCell>
+                <TableCell>{item.price}</TableCell>
+                <TableCell>
+                  <EditSaleDetails details={item} name={item.product.name} />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

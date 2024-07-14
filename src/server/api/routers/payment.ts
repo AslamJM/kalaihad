@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { paymentHistorySchema } from "~/schema/payment";
+import { editPaymentSchema } from "~/schema/sale";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const paymentRouter = createTRPCRouter({
@@ -66,6 +67,23 @@ export const paymentRouter = createTRPCRouter({
                 success: false,
                 data: null,
                 message: "Error occurred in payment"
+            }
+        }
+    }),
+
+    editPayment: publicProcedure.input(editPaymentSchema).mutation(async ({ ctx, input }) => {
+        try {
+            const updated = await ctx.db.payment.update({ where: { sale_id: input.id }, data: input.update })
+            return {
+                success: true,
+                data: updated,
+                message: "Payment updated successfully"
+            }
+        } catch (error) {
+            return {
+                success: false,
+                data: null,
+                message: "Error occurred in Edit"
             }
         }
     })

@@ -1,6 +1,7 @@
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { createCustomerSchema } from '~/schema/sale'
+import { handlerError } from "~/lib/handleError";
 
 export const customerRouter = createTRPCRouter({
     create: publicProcedure.input(createCustomerSchema).mutation(async ({ ctx, input }) => {
@@ -16,11 +17,7 @@ export const customerRouter = createTRPCRouter({
                 message: "Customer created successfully"
             }
         } catch (error) {
-            return {
-                success: false,
-                data: null,
-                message: "Error in customer created "
-            }
+            return handlerError(error)
         }
     }),
 

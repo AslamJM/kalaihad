@@ -11,3 +11,5 @@ export const editPaymentHistorySchema = z.object({
     type: z.enum(["INC", "DEC"]),
     amount: z.number()
 })
+
+export type EditHistoryInput = z.infer<typeof editPaymentHistorySchema>

@@ -4,7 +4,7 @@ import { create } from 'zustand'
 export type SaleItem = {
     product: Product,
     quantity: number,
-
+    price: number
 
 }
 
@@ -20,7 +20,7 @@ type Action = {
     clear: () => void,
     setCustomerId: (id: string) => void
     setDate: (date: Date) => void
-    update: (id: number, quantity: number) => void
+    update: (id: number, quantity: Partial<SaleItem>) => void
 }
 
 export const useSaleCreateStore = create<State & Action>((set) => ({
@@ -36,5 +36,5 @@ export const useSaleCreateStore = create<State & Action>((set) => ({
     clear: () => set(() => ({ items: [], customerId: "", date: new Date() })),
     setCustomerId: (id) => set(() => ({ customerId: id })),
     setDate: (date) => set(() => ({ date })),
-    update: (id, quantity) => set(({ items }) => ({ items: items.map(item => item.product.id === id ? { ...item, quantity } : item) }))
+    update: (id, quantity) => set(({ items }) => ({ items: items.map(item => item.product.id === id ? { ...item, ...quantity } : item) }))
 }))

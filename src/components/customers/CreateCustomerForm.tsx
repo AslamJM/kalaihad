@@ -34,6 +34,8 @@ const CreateCustomerForm = () => {
       if (data.success) {
         form.reset();
         await utils.customer.all.invalidate();
+      } else {
+        form.setError("name", { message: data.message });
       }
     },
   });
@@ -58,7 +60,10 @@ const CreateCustomerForm = () => {
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={form.formState.isSubmitting}>
+        <Button
+          type="submit"
+          disabled={form.formState.isSubmitting || !form.getValues("name")}
+        >
           {createCustomer.isPending && (
             <Loader2 className="mr-2 animate-spin" />
           )}

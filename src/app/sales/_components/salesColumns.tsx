@@ -2,6 +2,8 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { formatSLR } from "sl-currency-formatter";
+import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 
 export type TableSale = {
@@ -32,10 +34,20 @@ export const saleCoumns: ColumnDef<TableSale>[] = [
   {
     accessorKey: "total",
     header: "Total",
+    cell: ({ row }) => {
+      return formatSLR(row.original.total);
+    },
   },
   {
     accessorKey: "outstanding",
     header: "Outstanding",
+    cell: ({ row }) => {
+      const outstanding = row.original.outstanding;
+      if (outstanding === 0) {
+        return <Badge className="bg-green-500">Paid</Badge>;
+      }
+      return formatSLR(row.original.outstanding);
+    },
   },
   {
     header: "Invoice",

@@ -11,7 +11,7 @@ import { Input } from "../ui/input";
 const SaleItemList = () => {
   const { items } = useSaleCreateStore();
   const total = items.reduce(
-    (acc, item) => acc + item.product.selling_price * item.quantity,
+    (acc, item) => acc + item.price * item.quantity,
     0,
   );
   return (
@@ -41,11 +41,22 @@ export default SaleItemList;
 
 const ItemTableRow = ({ item }: { item: SaleItem }) => {
   const [quantity, setQuantity] = useState(item.quantity);
+  const [price, setPrice] = useState(item.price);
   const [editMode, setEditMode] = useState(false);
   const { remove, update } = useSaleCreateStore();
 
   const onUpdate = () => {
-    update(item.product.id, +quantity);
+    const input: Partial<SaleItem> = {};
+
+    if (quantity !== item.quantity) {
+      input.quantity = quantity;
+    }
+
+    if (price !== item.price) {
+      input.price = price;
+    }
+
+    update(item.product.id, input);
     setEditMode(false);
   };
 
@@ -63,7 +74,20 @@ const ItemTableRow = ({ item }: { item: SaleItem }) => {
           />
         )}
       </TableCell>
-      <TableCell>{item.quantity * item.product.selling_price}</TableCell>
+      <TableCell>
+        {!editMode ? (
+          <div>
+            <p className="text-sm text-muted-foreground">{`${item.quantity} x ${item.price}`}</p>
+            <p className="text-sm">{item.quantity * item.price}</p>
+          </div>
+        ) : (
+          <Input
+            type="number"
+            value={price}
+            onChange={(e) => setPrice(+e.target.value)}
+          />
+        )}
+      </TableCell>
       <TableCell className="flex items-center justify-end">
         {editMode ? (
           <Button size="icon" variant="ghost" onClick={() => onUpdate()}>

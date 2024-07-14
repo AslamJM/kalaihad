@@ -11,6 +11,8 @@ import { Table, TableBody, TableCell, TableRow } from "~/components/ui/table";
 import { formatDate } from "~/lib/utils";
 import PaymentHistories from "./PaymentHistories";
 import MakePayment from "./MakePayment";
+import { formatSLR } from "sl-currency-formatter";
+import EditPaymentDetail from "./EditPaymentDetail";
 
 interface PaymentDetailsProps {
   details: Payment & {
@@ -28,6 +30,7 @@ const PaymentDetails: FC<PaymentDetailsProps> = ({ details }) => {
     payment_status,
     payment_histories,
     sale_id,
+    payment_method,
   } = details;
   return (
     <div className="space-y-6">
@@ -41,19 +44,28 @@ const PaymentDetails: FC<PaymentDetailsProps> = ({ details }) => {
             <TableCell>
               <PaymentStatusBage status={payment_status} />
             </TableCell>
+            <TableCell>
+              <EditPaymentDetail details={details} />
+            </TableCell>
           </TableRow>
         </TableBody>
       </Table>
       {payment_status === "PENDING" && (
         <>
-          <div className="grid grid-cols-2">
+          <div className="grid grid-cols-3">
             <div>
               <Label>Outstanding</Label>
-              <p className="text-muted-foreground">{outstanding}</p>
+              <p className="text-muted-foreground">{formatSLR(outstanding)}</p>
             </div>
             <div>
               <Label>Due date</Label>
               <p className="text-muted-foreground">{formatDate(due_date)}</p>
+            </div>
+            <div>
+              <Label>Payment Method</Label>
+              <p className="text-muted-foreground">
+                {payment_method.toLowerCase()}
+              </p>
             </div>
           </div>
           <h3>Make Payment</h3>

@@ -33,16 +33,18 @@ const formSchema = z.object({
 
 type FormSchema = z.infer<typeof formSchema>;
 
+const defaultValues = {
+  name: "",
+  quantity: "",
+  selling_price: "",
+  buying_price: "",
+  store_id: null,
+};
+
 const CreateProductForm = () => {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      quantity: "",
-      selling_price: "",
-      buying_price: "",
-      store_id: null,
-    },
+    defaultValues,
   });
 
   const utils = api.useUtils();
@@ -50,7 +52,7 @@ const CreateProductForm = () => {
   const createProduct = api.product.create.useMutation({
     onSuccess: async (data) => {
       if (data.success) {
-        form.reset();
+        form.reset(defaultValues);
         await utils.product.all.invalidate();
       }
     },
@@ -59,8 +61,6 @@ const CreateProductForm = () => {
   const stores = api.store.getLatest.useQuery();
 
   const onSubmit = (values: FormSchema) => {
-    console.log(values);
-
     const input = {
       name: values.name,
       quantity: +values.quantity,
@@ -70,6 +70,7 @@ const CreateProductForm = () => {
     };
     createProduct.mutate(input);
   };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -106,7 +107,12 @@ const CreateProductForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Store</FormLabel>
-                <Select onValueChange={field.onChange}>
+                <Select
+                  onValueChange={(v) => {
+                    console.log(v);
+                    form.setValue("store_id", v);
+                  }}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select Store" />

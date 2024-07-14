@@ -44,7 +44,7 @@ model Product {
   selling_price Float
   store_id Int
 
-  store Store @relation(fields: [store_id],references: [id])
+  store Store @relation(fields: [store_id],references: [id],onDelete: Cascade)
   histories StockHistory[]
   sale_details SaleDetails[]    
 
@@ -71,7 +71,7 @@ model StockHistory {
     product_id Int
     createdAt DateTime @default(now())
 
-    product Product @relation(fields: [product_id],references: [id])
+    product Product @relation(fields: [product_id],references: [id],onDelete: Cascade)
     edits StockHistoryEdit[]
 }
 
@@ -82,7 +82,7 @@ model StockHistoryEdit {
     amount Int
     createdAt DateTime @default(now())
 
-    stock_history StockHistory @relation(fields: [history_id],references: [id])
+    stock_history StockHistory @relation(fields: [history_id],references: [id],onDelete: Cascade)
 }
 
 model User {
@@ -97,7 +97,7 @@ model User {
 
 model Customer {
    id        Int     @id @default(autoincrement())
-    name String
+    name String @unique
     Sales Sale[]
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
@@ -111,7 +111,7 @@ model Sale {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-   customer Customer @relation(fields: [customer_id],references: [id]) 
+   customer Customer @relation(fields: [customer_id],references: [id],onDelete: Cascade) 
   sale_details SaleDetails[]
   payment Payment?
 }
@@ -119,10 +119,11 @@ model Sale {
 model SaleDetails {
   product_id Int  
   sale_id Int
-  quantity Int  
+  quantity Int
+  price Float  
 
-  sale Sale @relation(fields: [sale_id],references: [id])
-  product Product @relation(fields: [product_id],references: [id])
+  sale Sale @relation(fields: [sale_id],references: [id],onDelete: Cascade)
+  product Product @relation(fields: [product_id],references: [id],onDelete: Cascade)
 
   @@id(name: "sale_detail_id",fields: [product_id,sale_id])
 }
@@ -148,7 +149,7 @@ model Payment {
     due_date DateTime
     updated_at DateTime @updatedAt
 
-    sale Sale @relation(fields: [sale_id],references: [id])
+    sale Sale @relation(fields: [sale_id],references: [id],onDelete: Cascade)
     payment_histories PaymentHistory[]
 }
 
@@ -158,7 +159,7 @@ model PaymentHistory {
     date DateTime
     payment_id Int
 
-    payment Payment @relation(fields: [payment_id],references: [sale_id])
+    payment Payment @relation(fields: [payment_id],references: [sale_id],onDelete: Cascade)
 
     edits PaymentHistoryEdit[]
 }
@@ -170,5 +171,5 @@ model PaymentHistoryEdit {
     amount Float
     createdAt DateTime @default(now())
 
-    payment_history PaymentHistory @relation(fields: [history_id],references: [id])
+    payment_history PaymentHistory @relation(fields: [history_id],references: [id],onDelete: Cascade)
 }

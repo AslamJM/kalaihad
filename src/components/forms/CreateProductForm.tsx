@@ -14,21 +14,25 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { api } from "~/trpc/react";
+import { cn } from "~/lib/utils";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import Loader from "../common/Loader";
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "../ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { useMemo, useState } from "react";
+import { Check, ChevronsUpDown } from "lucide-react";
 
 const formSchema = z.object({
   name: z.string().min(1, "name is required"),
   quantity: z.string(),
   selling_price: z.string(),
   buying_price: z.string(),
-  store_id: z.string().nullable(),
+  store_id: z.number().nullable(),
 });
 
 type FormSchema = z.infer<typeof formSchema>;
@@ -42,6 +46,8 @@ const defaultValues = {
 };
 
 const CreateProductForm = () => {
+  const [open, setOpen] = useState(false);
+
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues,
@@ -60,13 +66,24 @@ const CreateProductForm = () => {
 
   const stores = api.store.getLatest.useQuery();
 
+  const values = useMemo(() => {
+    if (stores.data) {
+      return stores.data.map((d) => ({
+        id: d.id,
+        value: d.name,
+        label: d.name,
+      }));
+    }
+    return [];
+  }, [stores]);
+
   const onSubmit = (values: FormSchema) => {
     const input = {
       name: values.name,
       quantity: +values.quantity,
       selling_price: +values.selling_price,
       buying_price: +values.buying_price,
-      store_id: +values.store_id!,
+      store_id: values.store_id!,
     };
     createProduct.mutate(input);
   };
@@ -106,34 +123,52 @@ const CreateProductForm = () => {
             name="store_id"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Store</FormLabel>
-                <Select
-                  onValueChange={(v) => {
-                    console.log(v);
-                    form.setValue("store_id", v);
-                  }}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Store" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {stores.isLoading ? (
-                      <Loader />
-                    ) : stores.data ? (
-                      <>
-                        {stores.data.map((st) => (
-                          <SelectItem key={st.id} value={st.id.toString()}>
-                            {st.name}
-                          </SelectItem>
-                        ))}
-                      </>
-                    ) : (
-                      <></>
-                    )}
-                  </SelectContent>
-                </Select>
+                <FormLabel className="block">Store</FormLabel>
+                <Popover open={open} onOpenChange={setOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={open}
+                      className="w-[200px] justify-between"
+                    >
+                      {field.value
+                        ? values.find((st) => st.id === field.value)?.label
+                        : "Select Store..."}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0">
+                    <Command>
+                      <CommandInput placeholder="Search customer..." />
+                      <CommandList>
+                        <CommandEmpty>No customers found.</CommandEmpty>
+                        <CommandGroup>
+                          {values.map((c) => (
+                            <CommandItem
+                              key={c.value}
+                              value={c.value.toString()}
+                              onSelect={() => {
+                                form.setValue("store_id", c.id);
+                                setOpen(false);
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  field.value === c.id
+                                    ? "opacity-100"
+                                    : "opacity-0",
+                                )}
+                              />
+                              {c.label}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
                 <FormMessage />
               </FormItem>
             )}

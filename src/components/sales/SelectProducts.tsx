@@ -56,7 +56,7 @@ const SelectProducts = () => {
   return (
     <div className="flex items-end space-x-4">
       <div className="w-1/2">
-        <Label>Item</Label>
+        <Label className="mb-1 block">Item</Label>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
